@@ -1,0 +1,7 @@
+.cache/*
+!.cache/.keep
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

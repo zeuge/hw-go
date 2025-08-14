@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      dockerfile: development.Dockerfile
+    volumes:
+      - .:/app
+      - ./.cache/go-mod-cache:/go/pkg/mod
+      - ./.cache/go-build-cache:/root/.cache/go-build
+    command: sleep infinity
+    restart: unless-stopped
