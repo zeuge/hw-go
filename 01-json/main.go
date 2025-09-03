@@ -9,10 +9,20 @@ import (
 	"strings"
 )
 
+type Error string
+
+func (e Error) Error() string { return string(e) }
+
+const (
+	errWrongKey     Error = "wrong key"
+	errNoData       Error = "no data"
+	errInvalidIndex Error = "invalid index"
+)
+
 func readFile(fileName string) ([]byte, error) {
 	content, err := os.ReadFile(fileName)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("os.ReadFile: %w", err)
 	}
 
 	return content, nil
@@ -22,7 +32,7 @@ func processMap(data map[string]any, keys []string) (any, error) {
 	key := keys[0]
 	value, ok := data[key]
 	if !ok {
-		return nil, fmt.Errorf("Ключ %s не найден\n", key)
+		return nil, fmt.Errorf("%w: %s", errWrongKey, key)
 	}
 
 	if len(keys) == 1 {
@@ -37,18 +47,18 @@ func processMap(data map[string]any, keys []string) (any, error) {
 		data, err := processSlice(v, keys[1:])
 		return data, err
 	default:
-		return nil, fmt.Errorf("Нет данных по пути '%s'\n", path(keys))
+		return nil, fmt.Errorf("%w: %s", errNoData, path(keys))
 	}
 }
 
 func processSlice(data []any, keys []string) (any, error) {
 	key, err := strconv.Atoi(keys[0])
 	if err != nil {
-		return nil, fmt.Errorf("Ошибка преобразования: %v\n", err)
+		return nil, fmt.Errorf("strconv.Atoi: %w", err)
 	}
 
 	if key < 0 || key >= len(data) {
-		return nil, fmt.Errorf("Неверный индекс %v для массива\n", key)
+		return nil, fmt.Errorf("%w: %v", errInvalidIndex, key)
 	}
 
 	value := data[key]
@@ -65,7 +75,7 @@ func processSlice(data []any, keys []string) (any, error) {
 		data, err := processSlice(v, keys[1:])
 		return data, err
 	default:
-		return nil, fmt.Errorf("Нет данных по пути '%s'\n", path(keys))
+		return nil, fmt.Errorf("%w: %s", errNoData, path(keys))
 	}
 }
 
