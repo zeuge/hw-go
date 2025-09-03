@@ -16,7 +16,7 @@ var normalizeRegex = regexp.MustCompile(`[^a-zA-Zа-яА-ЯёЁ]`)
 func readFile(fileName string) (string, error) {
 	content, err := os.ReadFile(fileName)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("os.ReadFile: %w", err)
 	}
 
 	return string(content), nil
