@@ -1,0 +1,7 @@
+{
+  "profile": {
+    "name": "John Doe",
+    "info": { "gender": "male", "age": 30, "height": 170, "weight": "65.5" },
+    "roles": ["admin", "user"]
+  }
+}
