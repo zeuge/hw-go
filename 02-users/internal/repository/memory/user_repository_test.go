@@ -4,21 +4,26 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/zeuge/hw-go/02-users/internal/entity"
 	"github.com/zeuge/hw-go/02-users/internal/repository/memory"
 )
 
-func newUser() entity.User {
-	user := entity.NewUser("John Doe", "john.doe@example.com", entity.AdminRole)
+func newUser() (entity.User, error) {
+	user, err := entity.NewUser("John Doe", "john.doe@example.com", entity.AdminRole)
+	if err != nil {
+		return entity.User{}, err
+	}
 
-	return user
+	return user, nil
 }
 
 func TestUserRepository_Save(t *testing.T) {
 	repo := memory.NewUserRepository()
-	user := newUser()
+	user, err := newUser()
+	require.NoError(t, err)
 
-	err := repo.Save(user)
+	err = repo.Save(user)
 	assert.NoError(t, err)
 
 	foundUser, err := repo.FindByID(user.ID)
@@ -28,20 +33,24 @@ func TestUserRepository_Save(t *testing.T) {
 
 func TestUserRepository_FindByID(t *testing.T) {
 	repo := memory.NewUserRepository()
-	user := newUser()
+	user, err := newUser()
+	require.NoError(t, err)
 	repo.Save(user)
 
 	foundUser, err := repo.FindByID(user.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, user, foundUser)
 
-	foundUser, err = repo.FindByID(entity.NewID())
+	id, err := entity.NewID()
+	require.NoError(t, err)
+	foundUser, err = repo.FindByID(id)
 	assert.Error(t, err)
 }
 
 func TestUserRepository_FindAll(t *testing.T) {
 	repo := memory.NewUserRepository()
-	user := newUser()
+	user, err := newUser()
+	require.NoError(t, err)
 	repo.Save(user)
 
 	users := repo.FindAll()
@@ -51,10 +60,11 @@ func TestUserRepository_FindAll(t *testing.T) {
 
 func TestUserRepository_DeleteByID(t *testing.T) {
 	repo := memory.NewUserRepository()
-	user := newUser()
+	user, err := newUser()
+	require.NoError(t, err)
 	repo.Save(user)
 
-	err := repo.DeleteByID(user.ID)
+	err = repo.DeleteByID(user.ID)
 	assert.NoError(t, err)
 
 	_, err = repo.FindByID(user.ID)
@@ -66,7 +76,8 @@ func TestUserRepository_DeleteByID(t *testing.T) {
 
 func TestUserRepository_FindByRole(t *testing.T) {
 	repo := memory.NewUserRepository()
-	user := newUser()
+	user, err := newUser()
+	require.NoError(t, err)
 	repo.Save(user)
 
 	users := repo.FindByRole(entity.AdminRole)

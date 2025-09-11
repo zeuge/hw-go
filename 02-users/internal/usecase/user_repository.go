@@ -1,4 +1,4 @@
-package repository
+package usecase
 
 import "github.com/zeuge/hw-go/02-users/internal/entity"
 
