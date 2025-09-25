@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
-	"strconv"
 	"sync"
 	"time"
 
@@ -13,37 +12,25 @@ import (
 	"github.com/zeuge/hw-go/04-scrape/internal/config"
 )
 
-type Result struct {
-	Date        time.Time
-	StatusCode  int
-	URL         string
-	Title       string
-	Description string
+type Scraper struct {
+	cfg *config.ScraperConfig
 }
 
-func NewResult(statusCode int, url, title, description string) Result {
-	return Result{
-		Date:        time.Now(),
-		StatusCode:  statusCode,
-		URL:         url,
-		Title:       title,
-		Description: description,
+func New(cfg *config.ScraperConfig) *Scraper {
+	return &Scraper{
+		cfg: cfg,
 	}
 }
 
-func (r *Result) ToSlice() []string {
-	return []string{r.Date.Format(time.RFC3339), r.URL, strconv.Itoa(r.StatusCode), r.Title, r.Description}
-}
-
-func Run(chanUrls <-chan string, cfg *config.ScraperConfig) <-chan Result {
+func (s *Scraper) Run(ctx context.Context, chanUrls <-chan string) <-chan Result {
 	chanResults := make(chan Result)
 
 	var wg sync.WaitGroup
 
-	for range cfg.Limit {
+	for range s.cfg.Limit {
 		wg.Go(func() {
 			for url := range chanUrls {
-				chanResults <- scrape(url, cfg)
+				chanResults <- s.scrape(ctx, url)
 			}
 		})
 	}
@@ -56,10 +43,10 @@ func Run(chanUrls <-chan string, cfg *config.ScraperConfig) <-chan Result {
 	return chanResults
 }
 
-func scrape(url string, cfg *config.ScraperConfig) Result {
+func (s *Scraper) scrape(ctx context.Context, url string) Result {
 	slog.Info("scraping", "url", url)
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, s.cfg.Timeout)
 	defer cancel()
 
 	client := &http.Client{}
@@ -74,7 +61,7 @@ func scrape(url string, cfg *config.ScraperConfig) Result {
 		return NewResult(0, url, "", "")
 	}
 
-	for range cfg.Retries {
+	for range s.cfg.Retries {
 		resp, err = client.Do(req)
 		if err == nil {
 			defer resp.Body.Close()
@@ -82,7 +69,7 @@ func scrape(url string, cfg *config.ScraperConfig) Result {
 			break
 		}
 
-		time.Sleep(cfg.Sleep)
+		time.Sleep(s.cfg.Sleep)
 	}
 
 	if err != nil || resp == nil {

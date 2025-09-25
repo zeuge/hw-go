@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -9,12 +10,13 @@ import (
 	"github.com/zeuge/hw-go/04-scrape/internal/scraper"
 )
 
-func Run(cfg *config.Config) error {
+func Run(ctx context.Context, cfg *config.Config) error {
 	slog.Info("run app", "config", cfg)
 
 	chanUrls, chanErr := file.ReadLines(&cfg.File)
 
-	chanResults := scraper.Run(chanUrls, &cfg.Scraper)
+	s := scraper.New(&cfg.Scraper)
+	chanResults := s.Run(ctx, chanUrls)
 
 	err := file.WriteResults(&cfg.File, chanResults)
 	if err != nil {
