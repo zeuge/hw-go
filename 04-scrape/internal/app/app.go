@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/zeuge/hw-go/04-scrape/internal/config"
 	"github.com/zeuge/hw-go/04-scrape/internal/file"
@@ -11,8 +10,6 @@ import (
 )
 
 func Run(ctx context.Context, cfg *config.Config) error {
-	slog.Info("run app", "config", cfg)
-
 	chanUrls, chanErr := file.ReadLines(&cfg.File)
 
 	s := scraper.New(&cfg.Scraper)
