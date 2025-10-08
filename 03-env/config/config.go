@@ -31,17 +31,17 @@ type (
 	}
 )
 
-var defaultConfig = map[string]any{
-	"app.host":           "localhost",
-	"app.port":           8080,
-	"pg.dsn":             "postgres://user:password@localhost:5432/db",
-	"pg.min_connections": 2,
-	"pg.max_connections": 10,
-	"log.level":          "info",
-	"log.format":         "text",
-}
-
 func LoadConfig() (*Config, error) {
+	var defaultConfig = map[string]any{
+		"app.host":           "localhost",
+		"app.port":           8080,
+		"pg.dsn":             "postgres://user:password@localhost:5432/db",
+		"pg.min_connections": 2,
+		"pg.max_connections": 10,
+		"log.level":          "info",
+		"log.format":         "text",
+	}
+
 	v := viper.New()
 
 	for key, value := range defaultConfig {
