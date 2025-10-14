@@ -18,9 +18,9 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./.cache/pgdata:/var/lib/postgresql/data
+      - ./.cache/pgdata:/var/lib/postgresql
     environment:
-      - PGDATA=/var/lib/postgresql/data
+      - PGDATA=/var/lib/postgresql
       - POSTGRES_PASSWORD=postgres
 
   redis:
