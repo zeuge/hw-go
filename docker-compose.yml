@@ -8,3 +8,25 @@ services:
       - ./.cache/go-build-cache:/root/.cache/go-build
     command: sleep infinity
     restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:18.0-alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - ./.cache/pgdata:/var/lib/postgresql/data
+    environment:
+      - PGDATA=/var/lib/postgresql/data
+      - POSTGRES_PASSWORD=postgres
+
+  redis:
+    image: redis:8.2-alpine
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    volumes:
+      - ./.cache/redis-data:/data
