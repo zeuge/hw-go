@@ -11,6 +11,7 @@ services:
     depends_on:
       - db
       - redis
+      - nats
 
   db:
     image: postgres:18.0-alpine
@@ -30,3 +31,11 @@ services:
       - 6379:6379
     volumes:
       - ./.cache/redis-data:/data
+
+  nats:
+    image: nats:2.12-alpine
+    restart: unless-stopped
+    ports:
+      - 4222:4222
+      - 8222:8222
+      - 6222:6222
