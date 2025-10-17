@@ -1,0 +1,49 @@
+version: "2"
+run:
+  tests: false
+linters:
+  default: all
+  disable:
+    - depguard
+    - dupl
+    - dupword
+    - exhaustruct
+    - interfacebloat
+    - revive
+    - varnamelen
+    - ireturn
+  settings:
+    tagliatelle:
+      case:
+        rules:
+          env: upperSnake
+          json: snake
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/zeuge/hw-go/05-crud)
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
