@@ -1,0 +1,16 @@
+# All recipes
+default:
+    @just --list
+
+# Run application
+run:
+	go run cmd/client/main.go
+
+# Generate gRPC code from proto files
+grpc-gen-client:
+	mkdir -p pkg/client/grpc
+
+	protoc --proto_path=deps/grpc \
+		--go_out=pkg/client/grpc --go_opt=paths=source_relative \
+		--go-grpc_out=pkg/client/grpc --go-grpc_opt=paths=source_relative \
+		deps/grpc/user/*.proto

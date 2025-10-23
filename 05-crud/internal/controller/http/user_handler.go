@@ -54,7 +54,7 @@ func (c *Controller) createUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(ctx, w, http.StatusCreated, user)
+	writeJSON(ctx, w, http.StatusCreated, &user)
 }
 
 func (c *Controller) getUserHandler(w http.ResponseWriter, r *http.Request) {
