@@ -36,3 +36,12 @@ migrate-create:  ## Create new migration files (specify NAME=)
 		exit 1; \
 	fi
 	goose -dir $(GOOSE_MIGRATION_DIR) create "$(NAME)" sql
+
+.PHONY: grpc-gen-server
+grpc-gen-server:  ## Generate gRPC code from proto files
+	mkdir -p pkg/server/grpc
+
+	protoc --proto_path=api/grpc \
+		--go_out=pkg/server/grpc --go_opt=paths=source_relative \
+		--go-grpc_out=pkg/server/grpc --go-grpc_opt=paths=source_relative \
+		api/grpc/user/*.proto

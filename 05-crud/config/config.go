@@ -14,10 +14,11 @@ type (
 		Pg    PgConfig
 		Redis RedisConfig
 		NATS  NATSConfig
+		GRPC  GRPCConfig
 	}
 
 	AppConfig struct {
-		GracefulShutdownTimeout time.Duration `env:"APP_GRACEFUL_SHUTDOWN_TIMEOUT" env-default:"2s"`
+		GracefulShutdownTimeout time.Duration `env:"APP_GRACEFUL_SHUTDOWN_TIMEOUT" env-default:"10s"`
 	}
 
 	HTTPConfig struct {
@@ -39,6 +40,11 @@ type (
 	NATSConfig struct {
 		Enabled bool   `env:"NATS_ENABLED" env-default:"true"`
 		URL     string `env:"NATS_URL"     env-default:"nats://nats:password@localhost:4222"`
+	}
+
+	GRPCConfig struct {
+		Host string `env:"GRPC_HOST" env-default:"localhost"`
+		Port int    `env:"GRPC_PORT" env-default:"50051"`
 	}
 )
 
