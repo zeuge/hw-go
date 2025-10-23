@@ -1,0 +1,25 @@
+[
+  {
+    "action": "create",
+    "data": {
+      "name": "user2",
+      "email": "user2@example.com",
+      "role": "user"
+    }
+  },
+  {
+    "action": "get",
+    "data": {
+      "uuid": "019a2794-5d08-7908-a7b3-0c1e6bf75b1c"
+    }
+  },
+  {
+    "action": "get_all"
+  },
+  {
+    "action": "delete",
+    "data": {
+      "uuid": "019a2794-5d08-7908-a7b3-0c1e6bf75b1c"
+    }
+  }
+]

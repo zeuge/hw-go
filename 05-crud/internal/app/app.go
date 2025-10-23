@@ -6,6 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/zeuge/hw-go/05-crud/config"
+	"github.com/zeuge/hw-go/05-crud/internal/controller/grpc"
 	"github.com/zeuge/hw-go/05-crud/internal/controller/http"
 	"github.com/zeuge/hw-go/05-crud/internal/repository/nats"
 	"github.com/zeuge/hw-go/05-crud/internal/repository/pg"
@@ -30,12 +31,22 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	defer notify.Close()
 
 	uc := usecase.New(repo, cache, notify)
-	controller := http.New(&cfg.HTTP, uc)
+
+	httpController := http.New(&cfg.HTTP, uc)
 
 	go func() {
-		err := controller.Start()
+		err := httpController.Start()
 		if err != nil {
-			slog.ErrorContext(ctx, "controller.Start", "error", err)
+			slog.ErrorContext(ctx, "httpController.Start", "error", err)
+		}
+	}()
+
+	grpcController := grpc.New(&cfg.GRPC, uc)
+
+	go func() {
+		err := grpcController.Start(ctx)
+		if err != nil {
+			slog.ErrorContext(ctx, "grpcController.Start", "error", err)
 		}
 	}()
 
@@ -44,9 +55,14 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	ctx, cancel := context.WithTimeout(ctx, cfg.App.GracefulShutdownTimeout)
 	defer cancel()
 
-	err = controller.Stop(ctx)
+	err = httpController.Stop(ctx)
 	if err != nil {
-		return fmt.Errorf("controller.Stop: %w", err)
+		return fmt.Errorf("httpController.Stop: %w", err)
+	}
+
+	err = grpcController.Stop(ctx)
+	if err != nil {
+		return fmt.Errorf("grpcController.Stop: %w", err)
 	}
 
 	return nil
