@@ -1,0 +1,26 @@
+GOOSE_DBSTRING := "postgres://postgres:postgres@localhost:5432/db05?sslmode=disable"
+GOOSE_MIGRATION_DIR := "migrations"
+
+# All recipes
+default:
+    @just --list
+
+# Run server application
+run-server:
+    go run cmd/server/main.go
+
+# List applied and pending migrations
+migrate-status:
+    goose -dir {{GOOSE_MIGRATION_DIR}} postgres {{GOOSE_DBSTRING}} status
+
+# Migrate to the latest version
+migrate-up:
+    goose -dir {{GOOSE_MIGRATION_DIR}} postgres {{GOOSE_DBSTRING}} up
+
+# Rollback the most recent migration
+migrate-down:
+    goose -dir {{GOOSE_MIGRATION_DIR}} postgres {{GOOSE_DBSTRING}} down-to 0
+
+# Create new migration files
+migrate-create NAME:
+    goose -dir {{GOOSE_MIGRATION_DIR}} create {{NAME}} sql

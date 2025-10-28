@@ -1,13 +1,7 @@
 package entity
 
-type Role string
-
 const (
-	AdminRole Role = "admin"
-	UserRole  Role = "user"
-	GuestRole Role = "guest"
+	AdminRole string = "admin"
+	UserRole  string = "user"
+	GuestRole string = "guest"
 )
-
-func (r Role) String() string {
-	return string(r)
-}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/zeuge/hw-go/05-crud/config"
@@ -54,7 +55,7 @@ func (r *UserCacheRepository) Set(ctx context.Context, user *entity.User) error 
 	return nil
 }
 
-func (r *UserCacheRepository) Get(ctx context.Context, id entity.ID) (*entity.User, error) {
+func (r *UserCacheRepository) Get(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	buf, err := r.client.Get(ctx, id.String()).Bytes()
 	if err != nil {
 		return nil, fmt.Errorf("r.client.Get: %w", err)
@@ -70,7 +71,7 @@ func (r *UserCacheRepository) Get(ctx context.Context, id entity.ID) (*entity.Us
 	return &user, nil
 }
 
-func (r *UserCacheRepository) Del(ctx context.Context, id entity.ID) error {
+func (r *UserCacheRepository) Del(ctx context.Context, id uuid.UUID) error {
 	err := r.client.Del(ctx, id.String()).Err()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return fmt.Errorf(".client.Del: %w", err)
