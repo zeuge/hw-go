@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/zeuge/hw-go/05-crud/config"
-	"github.com/zeuge/hw-go/05-crud/internal/usecase"
+	usecase "github.com/zeuge/hw-go/05-crud/internal/usecase/server"
 )
 
 type Controller struct {
@@ -16,7 +16,7 @@ type Controller struct {
 	uc     *usecase.UserUseCase
 }
 
-func New(cfg *config.HTTPConfig, uc *usecase.UserUseCase) *Controller {
+func New(cfg *config.HTTPServerConfig, uc *usecase.UserUseCase) *Controller {
 	mux := http.NewServeMux()
 
 	server := &http.Server{

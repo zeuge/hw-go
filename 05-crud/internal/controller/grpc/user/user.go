@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/zeuge/hw-go/05-crud/internal/usecase"
-	pb "github.com/zeuge/hw-go/05-crud/pkg/server/grpc/user"
+	pb "github.com/zeuge/hw-go/05-crud/api/pb/user"
+	usecase "github.com/zeuge/hw-go/05-crud/internal/usecase/server"
 )
 
 type Server struct {

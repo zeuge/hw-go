@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
+	pb "github.com/zeuge/hw-go/05-crud/api/pb/user"
 	"github.com/zeuge/hw-go/05-crud/config"
 	"github.com/zeuge/hw-go/05-crud/internal/controller/grpc/user"
-	"github.com/zeuge/hw-go/05-crud/internal/usecase"
-	pb "github.com/zeuge/hw-go/05-crud/pkg/server/grpc/user"
+	usecase "github.com/zeuge/hw-go/05-crud/internal/usecase/server"
 )
 
 type Controller struct {
@@ -23,7 +23,7 @@ type Controller struct {
 	port   string
 }
 
-func New(cfg *config.GRPCConfig, uc *usecase.UserUseCase) *Controller {
+func New(cfg *config.GRPCServerConfig, uc *usecase.UserUseCase) *Controller {
 	server := grpc.NewServer()
 
 	healthServer := health.NewServer()
