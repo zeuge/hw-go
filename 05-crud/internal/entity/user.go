@@ -3,21 +3,23 @@ package entity
 import (
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type User struct {
-	ID        ID        `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
-	Role      Role      `json:"role"`
+	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func NewUser(name, email string, role Role) (User, error) {
-	id, err := NewID()
+func NewUser(name, email string, role string) (*User, error) {
+	id, err := uuid.NewV7()
 	if err != nil {
-		return User{}, fmt.Errorf("NewID: %w", err)
+		return nil, fmt.Errorf("uuid.NewV7: %w", err)
 	}
 
 	user := User{
@@ -29,5 +31,5 @@ func NewUser(name, email string, role Role) (User, error) {
 		UpdatedAt: time.Now(),
 	}
 
-	return user, nil
+	return &user, nil
 }

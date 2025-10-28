@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -75,7 +76,7 @@ func (r *UserRepository) Save(ctx context.Context, user *entity.User) error {
 	return nil
 }
 
-func (r *UserRepository) FindByID(ctx context.Context, id entity.ID) (*entity.User, error) {
+func (r *UserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	sql, args, err := goqu.Select("id", "name", "email", "role", "created_at", "updated_at").
 		From("users").
 		Where(goqu.Ex{
@@ -108,7 +109,7 @@ func (r *UserRepository) FindByID(ctx context.Context, id entity.ID) (*entity.Us
 	return &user, nil
 }
 
-func (r *UserRepository) FindAll(ctx context.Context) ([]entity.User, error) {
+func (r *UserRepository) FindAll(ctx context.Context) ([]*entity.User, error) {
 	sql, _, err := goqu.Select("id", "name", "email", "role", "created_at", "updated_at").
 		From("users").
 		Order(goqu.C("name").Asc()).
@@ -123,7 +124,7 @@ func (r *UserRepository) FindAll(ctx context.Context) ([]entity.User, error) {
 	}
 	defer rows.Close()
 
-	users := make([]entity.User, 0, defaultEntityCap)
+	users := make([]*entity.User, 0, defaultEntityCap)
 
 	for rows.Next() {
 		user := entity.User{}
@@ -140,13 +141,13 @@ func (r *UserRepository) FindAll(ctx context.Context) ([]entity.User, error) {
 			return nil, fmt.Errorf("rows.Scan: %w", err)
 		}
 
-		users = append(users, user)
+		users = append(users, &user)
 	}
 
 	return users, nil
 }
 
-func (r *UserRepository) DeleteByID(ctx context.Context, id entity.ID) error {
+func (r *UserRepository) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	sql, args, err := goqu.Delete("users").
 		Where(goqu.Ex{
 			"id": id.String(),

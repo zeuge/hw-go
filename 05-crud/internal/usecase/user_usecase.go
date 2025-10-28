@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/google/uuid"
+
 	"github.com/zeuge/hw-go/05-crud/internal/entity"
 )
 
@@ -46,7 +48,7 @@ func (s *UserUseCase) CreateUser(ctx context.Context, user *entity.User) error {
 	return nil
 }
 
-func (s *UserUseCase) GetUser(ctx context.Context, id entity.ID) (*entity.User, error) {
+func (s *UserUseCase) GetUser(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	err := s.notify.Publish("info", "GetUser")
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to publish notification", "action", "GetUser", "error", err)
@@ -67,7 +69,7 @@ func (s *UserUseCase) GetUser(ctx context.Context, id entity.ID) (*entity.User, 
 	return user, nil
 }
 
-func (s *UserUseCase) GetUsers(ctx context.Context) ([]entity.User, error) {
+func (s *UserUseCase) GetUsers(ctx context.Context) ([]*entity.User, error) {
 	err := s.notify.Publish("info", "GetUsers")
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to publish notification", "action", "GetUsers", "error", err)
@@ -81,7 +83,7 @@ func (s *UserUseCase) GetUsers(ctx context.Context) ([]entity.User, error) {
 	return users, nil
 }
 
-func (s *UserUseCase) DeleteUser(ctx context.Context, id entity.ID) error {
+func (s *UserUseCase) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	err := s.notify.Publish("info", "GetUsers")
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to publish notification", "action", "DeleteUser", "error", err)

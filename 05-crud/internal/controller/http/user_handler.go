@@ -6,7 +6,9 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/zeuge/hw-go/05-crud/internal/entity"
+	"github.com/zeuge/hw-go/05-crud/internal/entity/dto"
 )
 
 func (c *Controller) getUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,11 +28,7 @@ func (c *Controller) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var input struct {
-		Name  string      `json:"name"`
-		Email string      `json:"email"`
-		Role  entity.Role `json:"role"`
-	}
+	var input dto.CreateUser
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
@@ -48,7 +46,7 @@ func (c *Controller) createUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = c.uc.CreateUser(ctx, &user)
+	err = c.uc.CreateUser(ctx, user)
 	if err != nil {
 		slog.ErrorContext(ctx, "c.uc.CreateUser", "error", err)
 		writeErrorJSON(ctx, w, http.StatusInternalServerError, "internal error")
@@ -62,9 +60,9 @@ func (c *Controller) createUserHandler(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	id, err := entity.NewIDFromString(r.PathValue("id"))
+	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
-		slog.ErrorContext(ctx, "entity.NewIDFromString", "error", err)
+		slog.ErrorContext(ctx, "uuid.Parse", "error", err)
 		writeErrorJSON(ctx, w, http.StatusBadRequest, err.Error())
 
 		return
@@ -91,9 +89,9 @@ func (c *Controller) getUserHandler(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	id, err := entity.NewIDFromString(r.PathValue("id"))
+	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
-		slog.ErrorContext(ctx, "entity.NewIDFromString", "error", err)
+		slog.ErrorContext(ctx, "uuid.Parse", "error", err)
 		writeErrorJSON(ctx, w, http.StatusBadRequest, err.Error())
 
 		return
