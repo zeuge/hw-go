@@ -9,21 +9,30 @@ import (
 
 type (
 	Config struct {
-		App   AppConfig
-		HTTP  HTTPConfig
-		Pg    PgConfig
-		Redis RedisConfig
-		NATS  NATSConfig
+		App        AppConfig
+		HTTPServer HTTPServerConfig
+		HTTPClient HTTPClientConfig
+		Pg         PgConfig
+		Redis      RedisConfig
+		NATS       NATSConfig
+		GRPCServer GRPCServerConfig
+		GRPCClient GRPCClientConfig
 	}
 
 	AppConfig struct {
-		GracefulShutdownTimeout time.Duration `env:"APP_GRACEFUL_SHUTDOWN_TIMEOUT" env-default:"2s"`
+		GracefulShutdownTimeout time.Duration `env:"APP_GRACEFUL_SHUTDOWN_TIMEOUT" env-default:"5s"`
+		UseGRPC                 bool          `env:"APP_USE_GRPC"                  env-default:"false"`
 	}
 
-	HTTPConfig struct {
-		Host              string        `env:"HTTP_HOST"                env-default:"localhost"`
-		Port              int           `env:"HTTP_PORT"                env-default:"8080"`
+	HTTPServerConfig struct {
+		Host              string        `env:"HTTP_SERVER_HOST"         env-default:"localhost"`
+		Port              int           `env:"HTTP_SERVER_PORT"         env-default:"8080"`
 		ReadHeaderTimeout time.Duration `env:"HTTP_READ_HEADER_TIMEOUT" env-default:"5s"`
+	}
+
+	HTTPClientConfig struct {
+		Host string `env:"HTTP_CLIENT_HOST" env-default:"localhost"`
+		Port int    `env:"HTTP_CLIENT_PORT" env-default:"8080"`
 	}
 
 	PgConfig struct {
@@ -39,6 +48,15 @@ type (
 	NATSConfig struct {
 		Enabled bool   `env:"NATS_ENABLED" env-default:"true"`
 		URL     string `env:"NATS_URL"     env-default:"nats://nats:password@localhost:4222"`
+	}
+
+	GRPCServerConfig struct {
+		Port int `env:"GRPC_SERVER_PORT" env-default:"50051"`
+	}
+
+	GRPCClientConfig struct {
+		Host string `env:"GRPC_CLIENT_HOST" env-default:"localhost"`
+		Port int    `env:"GRPC_CLIENT_PORT" env-default:"50051"`
 	}
 )
 
