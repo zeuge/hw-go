@@ -40,19 +40,17 @@ func New(cfg *config.GRPCServerConfig, uc *usecase.UserUseCase) *Controller {
 	return &controller
 }
 
-func (c *Controller) Start(ctx context.Context) error {
-	listenConfig := net.ListenConfig{}
-
-	listener, err := listenConfig.Listen(ctx, "tcp", ":"+c.port)
+func (c *Controller) Start() error {
+	lis, err := net.Listen("tcp", ":"+c.port) //nolint:noctx
 	if err != nil {
-		return fmt.Errorf("listenConfig.Listen: %w", err)
+		return fmt.Errorf("net.Listen: %w", err)
 	}
 
-	slog.Info("🚀 GRPC server listening at " + listener.Addr().String())
+	slog.Info("🚀 GRPC server listening at " + lis.Addr().String())
 
 	c.health.SetServingStatus(c.port, healthpb.HealthCheckResponse_SERVING)
 
-	err = c.server.Serve(listener)
+	err = c.server.Serve(lis)
 	if err != nil {
 		return fmt.Errorf("c.server.Serve: %w", err)
 	}
