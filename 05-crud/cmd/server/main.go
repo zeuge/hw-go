@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/zeuge/hw-go/05-crud/config"
-	app "github.com/zeuge/hw-go/05-crud/internal/app/server"
+	"github.com/zeuge/hw-go/05-crud/internal/app/server"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 		return
 	}
 
-	err = app.Run(ctx, cfg)
+	err = server.Run(ctx, cfg)
 	if err != nil {
 		slog.ErrorContext(ctx, "app.Run", "error", err)
 	}

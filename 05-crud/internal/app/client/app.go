@@ -6,10 +6,9 @@ import (
 	"log/slog"
 
 	"github.com/zeuge/hw-go/05-crud/config"
-	"github.com/zeuge/hw-go/05-crud/internal/controller/client"
 	"github.com/zeuge/hw-go/05-crud/internal/entity"
-	"github.com/zeuge/hw-go/05-crud/internal/repository/grpc"
-	"github.com/zeuge/hw-go/05-crud/internal/repository/http"
+	"github.com/zeuge/hw-go/05-crud/internal/repository/webapi/grpc"
+	"github.com/zeuge/hw-go/05-crud/internal/repository/webapi/http"
 	usecase "github.com/zeuge/hw-go/05-crud/internal/usecase/client"
 )
 
@@ -36,20 +35,8 @@ func Run(ctx context.Context, cfg *config.Config, commands []*entity.Command) er
 		slog.InfoContext(ctx, "Run http.")
 	}
 
-	controller := client.New(uc, commands)
-
-	ch := make(chan struct{})
-
-	go func() {
-		defer close(ch)
-
-		controller.Start(ctx)
-	}()
-
-	select {
-	case <-ctx.Done():
-	case <-ch:
-	}
+	handler := NewHandler(uc)
+	handler.Handle(ctx, commands)
 
 	err = grpcRepo.Close()
 	if err != nil {

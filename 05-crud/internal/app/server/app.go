@@ -8,9 +8,9 @@ import (
 	"github.com/zeuge/hw-go/05-crud/config"
 	"github.com/zeuge/hw-go/05-crud/internal/controller/grpc"
 	"github.com/zeuge/hw-go/05-crud/internal/controller/http"
-	"github.com/zeuge/hw-go/05-crud/internal/repository/nats"
-	"github.com/zeuge/hw-go/05-crud/internal/repository/pg"
-	"github.com/zeuge/hw-go/05-crud/internal/repository/redis"
+	"github.com/zeuge/hw-go/05-crud/internal/repository/messaging/nats"
+	"github.com/zeuge/hw-go/05-crud/internal/repository/storage/pg"
+	"github.com/zeuge/hw-go/05-crud/internal/repository/storage/redis"
 	usecase "github.com/zeuge/hw-go/05-crud/internal/usecase/server"
 )
 
@@ -44,7 +44,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	grpcController := grpc.New(&cfg.GRPCServer, uc)
 
 	go func() {
-		err := grpcController.Start(ctx)
+		err := grpcController.Start()
 		if err != nil {
 			slog.ErrorContext(ctx, "grpcController.Start", "error", err)
 		}
@@ -52,7 +52,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 
 	<-ctx.Done()
 
-	ctx, cancel := context.WithTimeout(ctx, cfg.App.GracefulShutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.App.GracefulShutdownTimeout) //nolint:contextcheck
 	defer cancel()
 
 	err = httpController.Stop(ctx)
