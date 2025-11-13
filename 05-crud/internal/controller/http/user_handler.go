@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+
 	"github.com/zeuge/hw-go/05-crud/internal/entity"
 	"github.com/zeuge/hw-go/05-crud/internal/entity/dto"
 )
@@ -54,7 +55,7 @@ func (c *Controller) createUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(ctx, w, http.StatusCreated, user)
+	writeJSON(ctx, w, http.StatusCreated, &user)
 }
 
 func (c *Controller) getUserHandler(w http.ResponseWriter, r *http.Request) {
