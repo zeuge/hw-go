@@ -16,12 +16,12 @@ import (
 	"github.com/zeuge/hw-go/05-crud/internal/entity/dto"
 )
 
-type GRPCUserRepository struct {
+type GRPCUserAdapter struct {
 	conn   *grpc.ClientConn
 	client pb.UserServiceClient
 }
 
-func New(ctx context.Context, cfg *config.GRPCClientConfig) (*GRPCUserRepository, error) {
+func New(ctx context.Context, cfg *config.GRPCClientConfig) (*GRPCUserAdapter, error) {
 	target := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 
 	conn, err := grpc.NewClient(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -31,7 +31,7 @@ func New(ctx context.Context, cfg *config.GRPCClientConfig) (*GRPCUserRepository
 
 	client := pb.NewUserServiceClient(conn)
 
-	repo := &GRPCUserRepository{
+	repo := &GRPCUserAdapter{
 		conn:   conn,
 		client: client,
 	}
@@ -39,8 +39,8 @@ func New(ctx context.Context, cfg *config.GRPCClientConfig) (*GRPCUserRepository
 	return repo, nil
 }
 
-func (r *GRPCUserRepository) Close() error {
-	err := r.conn.Close()
+func (a *GRPCUserAdapter) Close() error {
+	err := a.conn.Close()
 	if err != nil {
 		return fmt.Errorf("r.conn.Close: %w", err)
 	}
@@ -48,14 +48,14 @@ func (r *GRPCUserRepository) Close() error {
 	return nil
 }
 
-func (r *GRPCUserRepository) Create(ctx context.Context, dto dto.CreateUser) (*entity.User, error) {
+func (a *GRPCUserAdapter) Create(ctx context.Context, dto dto.CreateUser) (*entity.User, error) {
 	req := pb.CreateRequest{
 		Name:  dto.Name,
 		Email: dto.Email,
 		Role:  user.RoleToProto(dto.Role),
 	}
 
-	resp, err := r.client.Create(ctx, &req)
+	resp, err := a.client.Create(ctx, &req)
 	if err != nil {
 		return nil, fmt.Errorf("c.client.Create: %w", err)
 	}
@@ -70,12 +70,12 @@ func (r *GRPCUserRepository) Create(ctx context.Context, dto dto.CreateUser) (*e
 	return user, nil
 }
 
-func (r *GRPCUserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
+func (a *GRPCUserAdapter) FindByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	req := pb.GetRequest{
 		Uuid: id.String(),
 	}
 
-	resp, err := r.client.Get(ctx, &req)
+	resp, err := a.client.Get(ctx, &req)
 	if err != nil {
 		return nil, fmt.Errorf("r.client.Get: %w", err)
 	}
@@ -90,8 +90,8 @@ func (r *GRPCUserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entit
 	return user, nil
 }
 
-func (r *GRPCUserRepository) FindAll(ctx context.Context) ([]*entity.User, error) {
-	resp, err := r.client.GetAll(ctx, &empty.Empty{})
+func (a *GRPCUserAdapter) FindAll(ctx context.Context) ([]*entity.User, error) {
+	resp, err := a.client.GetAll(ctx, &empty.Empty{})
 	if err != nil {
 		return nil, fmt.Errorf("r.client.GetUsers: %w", err)
 	}
@@ -112,12 +112,12 @@ func (r *GRPCUserRepository) FindAll(ctx context.Context) ([]*entity.User, error
 	return users, nil
 }
 
-func (r *GRPCUserRepository) DeleteByID(ctx context.Context, id uuid.UUID) error {
+func (a *GRPCUserAdapter) DeleteByID(ctx context.Context, id uuid.UUID) error {
 	req := pb.DeleteRequest{
 		Uuid: id.String(),
 	}
 
-	_, err := r.client.Delete(ctx, &req)
+	_, err := a.client.Delete(ctx, &req)
 	if err != nil {
 		return fmt.Errorf("r.client.Delete: %w", err)
 	}

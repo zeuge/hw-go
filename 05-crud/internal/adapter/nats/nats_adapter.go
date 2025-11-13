@@ -8,13 +8,13 @@ import (
 	"github.com/zeuge/hw-go/05-crud/config"
 )
 
-type NotificationRepository struct {
+type NATSAdapter struct {
 	nc      *nats.Conn
 	enabled bool
 }
 
-func New(cfg *config.NATSConfig) (*NotificationRepository, error) {
-	repo := &NotificationRepository{
+func New(cfg *config.NATSConfig) (*NATSAdapter, error) {
+	repo := &NATSAdapter{
 		enabled: cfg.Enabled,
 	}
 
@@ -32,18 +32,18 @@ func New(cfg *config.NATSConfig) (*NotificationRepository, error) {
 	return repo, nil
 }
 
-func (r *NotificationRepository) Close() {
-	if r.nc != nil {
-		r.nc.Close()
+func (a *NATSAdapter) Close() {
+	if a.nc != nil {
+		a.nc.Close()
 	}
 }
 
-func (r *NotificationRepository) Publish(subject string, message string) error {
-	if !r.enabled {
+func (a *NATSAdapter) Publish(subject string, message string) error {
+	if !a.enabled {
 		return nil
 	}
 
-	err := r.nc.Publish(subject, []byte(message))
+	err := a.nc.Publish(subject, []byte(message))
 	if err != nil {
 		return fmt.Errorf("r.nc.Publish: %w", err)
 	}

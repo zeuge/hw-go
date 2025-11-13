@@ -19,28 +19,28 @@ import (
 	"github.com/zeuge/hw-go/05-crud/internal/entity/dto"
 )
 
-type HTTPUserRepository struct {
+type HTTPUserAdapter struct {
 	serverURL string
 }
 
-func New(ctx context.Context, cfg *config.HTTPClientConfig) (*HTTPUserRepository, error) {
+func New(ctx context.Context, cfg *config.HTTPClientConfig) (*HTTPUserAdapter, error) {
 	port := strconv.Itoa(cfg.Port)
 	target := "http://" + net.JoinHostPort(cfg.Host, port)
 
-	repo := &HTTPUserRepository{
+	repo := &HTTPUserAdapter{
 		serverURL: target,
 	}
 
 	return repo, nil
 }
 
-func (r *HTTPUserRepository) Create(ctx context.Context, dto dto.CreateUser) (*entity.User, error) {
+func (a *HTTPUserAdapter) Create(ctx context.Context, dto dto.CreateUser) (*entity.User, error) {
 	data, err := json.Marshal(dto)
 	if err != nil {
 		return nil, fmt.Errorf("json.Marshal: %w", err)
 	}
 
-	resp, err := r.requestWithContext(ctx, http.MethodPost, "/users", bytes.NewBuffer(data))
+	resp, err := a.requestWithContext(ctx, http.MethodPost, "/users", bytes.NewBuffer(data))
 	if err != nil {
 		return nil, fmt.Errorf("r.requestWithContext: %w", err)
 	}
@@ -62,8 +62,8 @@ func (r *HTTPUserRepository) Create(ctx context.Context, dto dto.CreateUser) (*e
 	return user, nil
 }
 
-func (r *HTTPUserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
-	resp, err := r.requestWithContext(ctx, http.MethodGet, "/users/"+id.String(), http.NoBody)
+func (a *HTTPUserAdapter) FindByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
+	resp, err := a.requestWithContext(ctx, http.MethodGet, "/users/"+id.String(), http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("r.requestWithContext: %w", err)
 	}
@@ -85,8 +85,8 @@ func (r *HTTPUserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entit
 	return user, nil
 }
 
-func (r *HTTPUserRepository) FindAll(ctx context.Context) ([]*entity.User, error) {
-	resp, err := r.requestWithContext(ctx, http.MethodGet, "/users", http.NoBody)
+func (a *HTTPUserAdapter) FindAll(ctx context.Context) ([]*entity.User, error) {
+	resp, err := a.requestWithContext(ctx, http.MethodGet, "/users", http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("r.requestWithContext: %w", err)
 	}
@@ -108,8 +108,8 @@ func (r *HTTPUserRepository) FindAll(ctx context.Context) ([]*entity.User, error
 	return users, nil
 }
 
-func (r *HTTPUserRepository) DeleteByID(ctx context.Context, id uuid.UUID) error {
-	resp, err := r.requestWithContext(ctx, http.MethodDelete, "/users/"+id.String(), http.NoBody)
+func (a *HTTPUserAdapter) DeleteByID(ctx context.Context, id uuid.UUID) error {
+	resp, err := a.requestWithContext(ctx, http.MethodDelete, "/users/"+id.String(), http.NoBody)
 	if err != nil {
 		return fmt.Errorf("r.requestWithContext: %w", err)
 	}
@@ -124,10 +124,10 @@ func (r *HTTPUserRepository) DeleteByID(ctx context.Context, id uuid.UUID) error
 	return nil
 }
 
-func (r *HTTPUserRepository) requestWithContext(
+func (a *HTTPUserAdapter) requestWithContext(
 	ctx context.Context, method, path string, body io.Reader,
 ) (*http.Response, error) {
-	url, err := url.JoinPath(r.serverURL, path)
+	url, err := url.JoinPath(a.serverURL, path)
 	if err != nil {
 		return nil, fmt.Errorf("url.JoinPath: %w", err)
 	}

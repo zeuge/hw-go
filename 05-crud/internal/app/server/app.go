@@ -6,11 +6,11 @@ import (
 	"log/slog"
 
 	"github.com/zeuge/hw-go/05-crud/config"
+	"github.com/zeuge/hw-go/05-crud/internal/adapter/nats"
 	"github.com/zeuge/hw-go/05-crud/internal/controller/grpc"
 	"github.com/zeuge/hw-go/05-crud/internal/controller/http"
-	"github.com/zeuge/hw-go/05-crud/internal/repository/messaging/nats"
-	"github.com/zeuge/hw-go/05-crud/internal/repository/storage/pg"
-	"github.com/zeuge/hw-go/05-crud/internal/repository/storage/redis"
+	"github.com/zeuge/hw-go/05-crud/internal/repository/pg"
+	"github.com/zeuge/hw-go/05-crud/internal/repository/redis"
 	usecase "github.com/zeuge/hw-go/05-crud/internal/usecase/server"
 )
 
