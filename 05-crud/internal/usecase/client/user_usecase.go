@@ -12,19 +12,19 @@ import (
 )
 
 type UserUseCase struct {
-	repo UserRepository
+	adapter UserAdapter
 }
 
-func New(repo UserRepository) *UserUseCase {
+func New(adapter UserAdapter) *UserUseCase {
 	return &UserUseCase{
-		repo: repo,
+		adapter,
 	}
 }
 
 func (u *UserUseCase) CreateUser(ctx context.Context, dto dto.CreateUser) (*entity.User, error) {
 	slog.InfoContext(ctx, "Start usecase.CreateUser")
 
-	user, err := u.repo.Create(ctx, dto)
+	user, err := u.adapter.Create(ctx, dto)
 	if err != nil {
 		return nil, fmt.Errorf("u.repo.Save: %w", err)
 	}
@@ -37,7 +37,7 @@ func (u *UserUseCase) CreateUser(ctx context.Context, dto dto.CreateUser) (*enti
 func (u *UserUseCase) GetUser(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	slog.InfoContext(ctx, "Start usecase.GetUser")
 
-	user, err := u.repo.FindByID(ctx, id)
+	user, err := u.adapter.FindByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("u.repo.FindByID: %w", err)
 	}
@@ -50,7 +50,7 @@ func (u *UserUseCase) GetUser(ctx context.Context, id uuid.UUID) (*entity.User, 
 func (u *UserUseCase) GetUsers(ctx context.Context) ([]*entity.User, error) {
 	slog.InfoContext(ctx, "Start usecase.GetUsers")
 
-	users, err := u.repo.FindAll(ctx)
+	users, err := u.adapter.FindAll(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("u.repo.FindAll: %w", err)
 	}
@@ -69,7 +69,7 @@ func (u *UserUseCase) GetUsers(ctx context.Context) ([]*entity.User, error) {
 func (u *UserUseCase) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	slog.InfoContext(ctx, "Start usecase.DeleteUser")
 
-	err := u.repo.DeleteByID(ctx, id)
+	err := u.adapter.DeleteByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("u.repo.DeleteByID: %w", err)
 	}
