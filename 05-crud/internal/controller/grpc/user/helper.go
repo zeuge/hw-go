@@ -42,9 +42,9 @@ func RoleToProto(role string) pb.Role {
 }
 
 func UserFromProto(proto *pb.User) (*entity.User, error) {
-	id, err := uuid.NewV7()
+	id, err := uuid.Parse(proto.Uuid)
 	if err != nil {
-		return nil, fmt.Errorf("uuid.NewV7: %w", err)
+		return nil, fmt.Errorf("uuid.Parse: %w", err)
 	}
 
 	user := entity.User{
