@@ -11,6 +11,7 @@ import (
 	"github.com/zeuge/hw-go/05-crud/internal/controller/http"
 	"github.com/zeuge/hw-go/05-crud/internal/repository/pg"
 	"github.com/zeuge/hw-go/05-crud/internal/repository/redis"
+	"github.com/zeuge/hw-go/05-crud/internal/tracing"
 	usecase "github.com/zeuge/hw-go/05-crud/internal/usecase/server"
 )
 
@@ -33,6 +34,11 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	uc := usecase.New(repo, cache, notify)
 
 	httpController := http.New(&cfg.HTTPServer, uc)
+
+	tracer, err := tracing.New(ctx, &cfg.Tracing)
+	if err != nil {
+		return fmt.Errorf("tracing.New: %w", err)
+	}
 
 	go func() {
 		err := httpController.Start()
@@ -57,12 +63,17 @@ func Run(ctx context.Context, cfg *config.Config) error {
 
 	err = httpController.Stop(ctx)
 	if err != nil {
-		return fmt.Errorf("httpController.Stop: %w", err)
+		slog.ErrorContext(ctx, "httpController.Stop", "error", err)
 	}
 
 	err = grpcController.Stop(ctx)
 	if err != nil {
-		return fmt.Errorf("grpcController.Stop: %w", err)
+		slog.ErrorContext(ctx, "grpcController.Stop", "error", err)
+	}
+
+	err = tracer.Shutdown(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "grpcController.Stop", "error", err)
 	}
 
 	return nil
