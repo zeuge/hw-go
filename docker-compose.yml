@@ -1,21 +1,4 @@
 services:
-  app:
-    build:
-      dockerfile: development.Dockerfile
-    volumes:
-      - .:/app
-      - ./.cache/go-mod-cache:/go/pkg/mod
-      - ./.cache/go-build-cache:/root/.cache/go-build
-    command: sleep infinity
-    restart: unless-stopped
-    ports:
-      - 8080:8080
-      - 9091:9091
-    depends_on:
-      - db
-      - redis
-      - nats
-
   db:
     image: postgres:18.0-alpine
     restart: unless-stopped
@@ -64,3 +47,11 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - 9090:9090
+
+  jaeger:
+    image: jaegertracing/jaeger:2.12.0
+    restart: always
+    ports:
+      - 16686:16686 # UI
+      - 4317:4317
+      - 4318:4318

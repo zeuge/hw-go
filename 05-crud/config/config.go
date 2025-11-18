@@ -17,9 +17,11 @@ type (
 		NATS       NATSConfig
 		GRPCServer GRPCServerConfig
 		GRPCClient GRPCClientConfig
+		Tracing    TracingConfig
 	}
 
 	AppConfig struct {
+		AppName                 string        `env:"APP_NAME"                      env-default:"app"`
 		GracefulShutdownTimeout time.Duration `env:"APP_GRACEFUL_SHUTDOWN_TIMEOUT" env-default:"5s"`
 		UseGRPC                 bool          `env:"APP_USE_GRPC"                  env-default:"false"`
 	}
@@ -28,6 +30,7 @@ type (
 		Host              string        `env:"HTTP_SERVER_HOST"         env-default:"localhost"`
 		Port              int           `env:"HTTP_SERVER_PORT"         env-default:"8080"`
 		ReadHeaderTimeout time.Duration `env:"HTTP_READ_HEADER_TIMEOUT" env-default:"5s"`
+		UsePprof          bool          `env:"APP_USE_PPROF"            env-default:"true"`
 	}
 
 	HTTPClientConfig struct {
@@ -57,6 +60,11 @@ type (
 	GRPCClientConfig struct {
 		Host string `env:"GRPC_CLIENT_HOST" env-default:"localhost"`
 		Port int    `env:"GRPC_CLIENT_PORT" env-default:"50051"`
+	}
+
+	TracingConfig struct {
+		AppName  string `env:"APP_NAME"        env-default:"app"`
+		Endpoint string `env:"JAEGER_ENDPOINT" env-default:"localhost:4318"`
 	}
 )
 
