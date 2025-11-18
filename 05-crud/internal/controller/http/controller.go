@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/http/pprof"
 
 	"github.com/zeuge/hw-go/05-crud/config"
 	usecase "github.com/zeuge/hw-go/05-crud/internal/usecase/server"
@@ -28,6 +29,10 @@ func New(cfg *config.HTTPServerConfig, uc *usecase.UserUseCase) *Controller {
 	controller := &Controller{
 		server: server,
 		uc:     uc,
+	}
+
+	if cfg.UsePprof {
+		mux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
 	}
 
 	mux.HandleFunc(http.MethodGet+" /live", controller.liveHandler)

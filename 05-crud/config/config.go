@@ -28,6 +28,7 @@ type (
 		Host              string        `env:"HTTP_SERVER_HOST"         env-default:"localhost"`
 		Port              int           `env:"HTTP_SERVER_PORT"         env-default:"8080"`
 		ReadHeaderTimeout time.Duration `env:"HTTP_READ_HEADER_TIMEOUT" env-default:"5s"`
+		UsePprof          bool          `env:"APP_USE_PPROF"            env-default:"true"`
 	}
 
 	HTTPClientConfig struct {
