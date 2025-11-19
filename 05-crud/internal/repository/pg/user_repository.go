@@ -40,14 +40,9 @@ func (r *UserRepository) Close() {
 }
 
 func (r *UserRepository) Ping(ctx context.Context) error {
-	sql, args, err := goqu.Select(goqu.L("1")).ToSQL()
+	err := r.pool.Ping(ctx)
 	if err != nil {
-		return fmt.Errorf("goqu.Select: %w", err)
-	}
-
-	_, err = r.pool.Exec(ctx, sql, args...)
-	if err != nil {
-		return fmt.Errorf("r.pool.Exec: %w", err)
+		return fmt.Errorf("r.pool.Ping: %w", err)
 	}
 
 	return nil
