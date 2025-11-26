@@ -42,7 +42,7 @@ func RoleToProto(role string) pb.Role {
 }
 
 func UserFromProto(proto *pb.User) (*entity.User, error) {
-	id, err := uuid.Parse(proto.Uuid)
+	id, err := uuid.Parse(proto.GetUuid())
 	if err != nil {
 		return nil, fmt.Errorf("uuid.Parse: %w", err)
 	}
