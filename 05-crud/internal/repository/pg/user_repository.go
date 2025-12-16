@@ -12,9 +12,13 @@ import (
 
 	"github.com/zeuge/hw-go/05-crud/config"
 	"github.com/zeuge/hw-go/05-crud/internal/entity"
+	"github.com/zeuge/hw-go/05-crud/internal/tracing"
 )
 
-const defaultEntityCap = 64
+const (
+	defaultEntityCap = 64
+	tracerName       = "repository"
+)
 
 type UserRepository struct {
 	pool *pgxpool.Pool
@@ -49,6 +53,11 @@ func (r *UserRepository) Ping(ctx context.Context) error {
 }
 
 func (r *UserRepository) Save(ctx context.Context, user *entity.User) error {
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "Save")
+	defer span.End()
+
 	sql, args, err := goqu.Insert("users").
 		Rows(goqu.Record{
 			"id":         user.ID.String(),
@@ -72,6 +81,11 @@ func (r *UserRepository) Save(ctx context.Context, user *entity.User) error {
 }
 
 func (r *UserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "FindByID")
+	defer span.End()
+
 	sql, args, err := goqu.Select("id", "name", "email", "role", "created_at", "updated_at").
 		From("users").
 		Where(goqu.Ex{
@@ -105,6 +119,11 @@ func (r *UserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Us
 }
 
 func (r *UserRepository) FindAll(ctx context.Context) ([]*entity.User, error) {
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "FindAll")
+	defer span.End()
+
 	sql, _, err := goqu.Select("id", "name", "email", "role", "created_at", "updated_at").
 		From("users").
 		Order(goqu.C("name").Asc()).
@@ -143,6 +162,11 @@ func (r *UserRepository) FindAll(ctx context.Context) ([]*entity.User, error) {
 }
 
 func (r *UserRepository) DeleteByID(ctx context.Context, id uuid.UUID) error {
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "DeleteByID")
+	defer span.End()
+
 	sql, args, err := goqu.Delete("users").
 		Where(goqu.Ex{
 			"id": id.String(),

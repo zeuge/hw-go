@@ -12,7 +12,10 @@ import (
 
 	"github.com/zeuge/hw-go/05-crud/config"
 	"github.com/zeuge/hw-go/05-crud/internal/entity"
+	"github.com/zeuge/hw-go/05-crud/internal/tracing"
 )
+
+const tracerName = "redis"
 
 type UserCacheRepository struct {
 	client     *redis.Client
@@ -42,6 +45,11 @@ func (r *UserCacheRepository) Close() error {
 }
 
 func (r *UserCacheRepository) Set(ctx context.Context, user *entity.User) error {
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "Set")
+	defer span.End()
+
 	buf, err := json.Marshal(user)
 	if err != nil {
 		return fmt.Errorf("json.Marshal: %w", err)
@@ -56,6 +64,11 @@ func (r *UserCacheRepository) Set(ctx context.Context, user *entity.User) error 
 }
 
 func (r *UserCacheRepository) Get(ctx context.Context, id uuid.UUID) (*entity.User, error) {
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "Get")
+	defer span.End()
+
 	buf, err := r.client.Get(ctx, id.String()).Bytes()
 	if err != nil {
 		return nil, fmt.Errorf("r.client.Get: %w", err)
@@ -72,6 +85,11 @@ func (r *UserCacheRepository) Get(ctx context.Context, id uuid.UUID) (*entity.Us
 }
 
 func (r *UserCacheRepository) Del(ctx context.Context, id uuid.UUID) error {
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "Del")
+	defer span.End()
+
 	err := r.client.Del(ctx, id.String()).Err()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return fmt.Errorf(".client.Del: %w", err)

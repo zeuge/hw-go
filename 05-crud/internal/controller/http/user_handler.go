@@ -10,10 +10,18 @@ import (
 
 	"github.com/zeuge/hw-go/05-crud/internal/entity"
 	"github.com/zeuge/hw-go/05-crud/internal/entity/dto"
+	"github.com/zeuge/hw-go/05-crud/internal/tracing"
 )
+
+const tracerName = "http_client"
 
 func (c *Controller) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "getUsersHandler")
+	defer span.End()
 
 	users, err := c.uc.GetUsers(ctx)
 	if err != nil {
@@ -27,7 +35,10 @@ func (c *Controller) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) createUserHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(r.Context(), "createUserHandler")
+	defer span.End()
 
 	var input dto.CreateUser
 
@@ -61,6 +72,11 @@ func (c *Controller) createUserHandler(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "getUserHandler")
+	defer span.End()
+
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		slog.ErrorContext(ctx, "uuid.Parse", "error", err)
@@ -89,6 +105,11 @@ func (c *Controller) getUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	tracer := tracing.GetTracer(tracerName)
+
+	ctx, span := tracer.Start(ctx, "deleteUserHandler")
+	defer span.End()
 
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
