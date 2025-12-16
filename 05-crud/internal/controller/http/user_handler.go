@@ -13,7 +13,7 @@ import (
 	"github.com/zeuge/hw-go/05-crud/internal/tracing"
 )
 
-const tracerName string = "http_client"
+const tracerName = "http_client"
 
 func (c *Controller) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -35,11 +35,9 @@ func (c *Controller) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) createUserHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
 	tracer := tracing.GetTracer(tracerName)
 
-	ctx, span := tracer.Start(ctx, "createUserHandler")
+	ctx, span := tracer.Start(r.Context(), "createUserHandler")
 	defer span.End()
 
 	var input dto.CreateUser

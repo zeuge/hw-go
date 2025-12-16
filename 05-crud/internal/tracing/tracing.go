@@ -40,7 +40,7 @@ func New(ctx context.Context, cfg *config.TracingConfig) (*tracer, error) {
 func (t *tracer) Shutdown(ctx context.Context) error {
 	err := t.Provider.Shutdown(ctx)
 	if err != nil {
-		return fmt.Errorf("Provider.Shutdown: %w", err)
+		return fmt.Errorf("t.Provider.Shutdown: %w", err)
 	}
 
 	return nil

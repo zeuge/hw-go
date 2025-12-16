@@ -15,7 +15,7 @@ import (
 	"github.com/zeuge/hw-go/05-crud/internal/tracing"
 )
 
-const tracerName string = "redis"
+const tracerName = "redis"
 
 type UserCacheRepository struct {
 	client     *redis.Client

@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	defaultEntityCap        = 64
-	tracerName       string = "pg"
+	defaultEntityCap = 64
+	tracerName       = "repository"
 )
 
 type UserRepository struct {
